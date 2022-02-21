@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #test{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 200px;
+            background-color: pink;
+            opacity: .5;
+        }
+    </style>
+</head>
+<body>
+    <div id="test"></div>
+    <a href="https://www.baidu.com/">点我跳转</a>
+</body>
+<script>
+    window.onload = function(){
+        var test = document.querySelector('#test')
+        /* 
+            pc端事件可以在移动端触发
+            pc端的事件在移动端会有300毫毛的延迟
+            移动端的事件没有延迟
+        */
+        test.addEventListener('click',function(){
+            test.style.display = 'none' 
+        })
+        /* test.addEventListener('click',function(){
+            console.log('click')
+        })
+        test.addEventListener('touchstart',function(){
+            console.log('touchstart')
+        })
+        test.addEventListener('mousedown',function(){
+            console.log('mousedown')
+        }) */
+        //touchstart mousedown  click
+    }
+</script>
+</html>

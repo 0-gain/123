@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Y-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+				margin: 0;
+				padding: 0;
+			}
+			html,body{
+				height: 100%;
+				overflow: hidden;
+			}
+			#wrap{
+                position: relative;
+				height: 100%;
+				overflow: hidden;
+				background: pink;
+			}
+            .scrollBar{
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 4px;
+                height: 100%;
+                background-color: aqua;
+                opacity: 0;
+                transition:1s opacity,1s height;
+            }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <div class="content"> 
+        </div>
+        <div class="scrollBar"></div>
+    </div>
+</body>
+<script src="./音乐台/js/common.js"></script>
+<script>
+    window.onload = function(){
+        document.addEventListener('touchstart',function(ev){
+            ev = ev || event;
+            ev.stopPropagation();
+            ev.preventDefault();
+        },{passive:false})
+        // 滑屏元素
+        var content = document.querySelector('#wrap .content')
+        // 滑屏区域
+        var wrap = document.querySelector('#wrap')
+        var scrollBar = document.querySelector('#wrap .scrollBar')
+        
+        for(var i =0; i<500;i++){
+            content.innerHTML += i+'Xzy<br/>';
+        }
+        
+        // 手指一开始的位置
+        var start = {x:0,y:0};
+        // 元素一开始的位置
+        var element = {x:0,y:0};
+        var minY = wrap.clientHeight - content.clientHeight;
+        var barHeight = document.documentElement.clientHeight*(document.documentElement.clientHeight/content.offsetHeight) + 'px'
+        scrollBar.style.height = barHeight;
+        /* 
+            快速滑屏的逻辑：一次滑动屏幕所移动的时间与距离
+                每一次move的过程
+                1.元素现在的位置和时间
+                2.元素之前的位置和时间
+                3.位置差和时间差
+                4.速度越快，距离越远（路程/时间）
+        */
+        var lastPoint = 0;
+        var lastTime = 0;
+        var pointDis = 0;
+        var timeDis = 1;
+        var speed = 0;
+        //防抖动   即点即停
+        /*transition的问题
+        
+        * 1.元素没有渲染完成时，无法触发过渡的
+        * 2.在transform切换下，如果前后transform属性值 变换函数的位置个数不一样 无法触发过渡的
+        * 3.我们没有办法拿到transition中任何一帧的状态
+        * 				-----  Tween算法
+        * */
+        var isY = true;
+        var isFirst = true;
+        //即点即停
+        var timer = 0;
+        var Tween = {
+			Linear: function(t,b,c,d){ return c*t/d + b; },
+			back: function(t,b,c,d,s){
+	            if (s == undefined) s = 1.70158;
+	            return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+        	}
+		}
+        /*
+		t:当前是哪一次
+		b:初始位置
+		c:最终位置与初始位置之间的差值
+		d:总次数
+		*/
+        content.addEventListener('touchstart',function(ev){
+            
+            ev = ev || event;
+            var touchC = ev.changedTouches[0];
+            start.x = touchC.clientX;
+            start.y = touchC.clientY;
+            element.x = common.css(content,'translateX');
+            element.y = common.css(content,'translateY');
+
+            lastPoint = touchC.clientY;
+            lastTime = new Date().getTime();
+
+            content.style.transition = 'none';
+            // 清楚速度的残余
+            pointDis = 0;
+
+            isY = true;
+            isFirst = true;
+
+            scrollBar.style.opacity = 1;
+            scrollBar.style.transition = '1s opacity'
+            clearInterval(timer);
+        })
+        content.addEventListener('touchmove',function(ev){
+            if(!isY){
+                return;
+            }
+            ev = ev || event;
+            var touchC = ev.changedTouches[0];
+            var now = {x:touchC.clientX,y:touchC.clientY};
+            var dis = {x:now.x - start.x, y:now.y - start.y};
+            var translateY = element.y + dis.y
+           
+            var nowPoint = touchC.clientY;
+            var nowTime = new Date().getTime();
+
+            pointDis = nowPoint - lastPoint;
+            timeDis = nowTime - lastTime;
+
+            lastPoint = nowPoint;
+            lastTime = nowTime;
+
+            if(isFirst){
+                isFirst = false;
+                if(Math.abs(dis.x)>Math.abs(dis.y)){
+                    isY = false;
+                }
+            }
+            /* 
+                手动橡皮筋效果：
+                    1.一次move过程中的实际有效距离在变小，元素滑动的距离变大；
+            */ 
+           if(translateY > 0){
+               content.handMove = true;
+                var scale = document.documentElement.clientHeight/((document.documentElement.clientHeight + translateY)*1.5);
+                translateY = common.css(content,'translateY') + pointDis * scale;
+            }else if(translateY < minY){
+                content.handMove = true;
+                var over = translateY - minY;
+                var scale = document.documentElement.clientHeight/((document.documentElement.clientHeight - over)*1.5);
+                translateY = common.css(content,'translateY') + pointDis * scale;
+            }
+            
+            common.css(content,'translateY',translateY);
+            /*滚动条滚动的实时距离/滚动条能滚动的最远距离   =  内容滚动的实时距离/内容能滚动的最远距离*/
+            var scale = document.documentElement.clientHeight * (translateY/content.offsetHeight);
+            common.css(scrollBar,'translateY',-scale)
+            barHeight = document.documentElement.clientHeight*(document.documentElement.clientHeight/(content.offsetHeight + common.css(content,'translateY'))) + 'px';
+            scrollBar.style.height = barHeight;
+            console.log(barHeight)
+        })
+        content.addEventListener('touchend',function(ev){
+            if(!isY){
+                return;
+            }
+            
+            
+            var translateY = common.css(content,'translateY')
+            if(content.handMove){
+                if(translateY > 0){
+                    content.style.transition = '1s transform';
+                    scrollBar.style.transition = '1s transform';
+                    translateY = 0;
+                    common.css(content,'translateY',translateY);
+                    common.css(scrollBar,'translateY',translateY);
+                }else if(translateY < minY){
+                    content.style.transition = '1s transform';
+                    scrollBar.style.transition = '1s transform';
+                    translateY = minY; 
+                    common.css(content,'translateY',translateY);
+                    common.css(scrollBar,'translateY',document.documentElement.clientHeight - scrollBar.offsetHeight);
+                    
+                    
+                }
+                content.handMove = false;
+            }else{
+                speed = pointDis / timeDis;
+                speed = Math.abs(speed) < 0.5 ? 0 : speed;
+                var targetY = translateY + speed*200;
+                var time = Math.abs(speed)*0.2;
+				time = time<0.8?0.8:time;
+				time = time>2?2:time;
+                var scale = document.documentElement.clientHeight * (targetY/content.offsetHeight);
+                scrollBar.style.transition = '1s transform';
+                common.css(scrollBar,'translateY',-scale)
+                
+                var type = 'Linear';
+                if(targetY > 0){
+                    targetY = 0;
+                    type = 'back';
+                    scrollBar.style.transition = '1s transform';
+                    common.css(scrollBar,'translateY',targetY)
+                }else if(targetY < minY){
+                    targetY = minY;
+                    type = 'back';
+                    scrollBar.style.transition = '1s transform';
+                    common.css(scrollBar,'translateY',document.documentElement.clientHeight - scrollBar.offsetHeight)
+                }
+                
+                bsr(type,targetY,time)
+                content.handMove = true;
+                
+            }
+
+           
+        })
+    
+        function bsr(type,targetY,time){
+            clearInterval(timer);
+            // 当前次数
+            var t = 0;
+            //初始位置
+            var b = common.css(content,'translateY');
+            // 最终位置与初始位置之间的差值
+            var c = targetY - b;
+            // 总次数
+            var d = time*1000 / (1000/60);
+            timer = setInterval(() => {
+                t++;
+				if(t>d){
+					clearInterval(timer);
+				}
+				var point = Tween[type](t,b,c,d);
+                barHeight = document.documentElement.clientHeight*(document.documentElement.clientHeight/(content.offsetHeight + common.css(content,'translateY'))) + 'px';
+                scrollBar.style.height = barHeight;
+                console.log(barHeight)
+				common.css(content,"translateY",point);
+            }, 1000/60);
+        }
+    }
+</script>
+</html>

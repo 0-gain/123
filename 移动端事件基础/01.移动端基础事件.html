@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #test{
+            width: 200px;
+            height: 200px;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+    <div id="test"></div>
+</body>
+<script>
+    /* 
+        触屏：                  指针：
+        touchstart              mousedown
+        touchmove               mousemove
+        touchend                mouseup
+    */
+   window.onload = function(){
+       var test = document.querySelector('#test')
+       test.addEventListener('mousedown',function(){
+           console.log('mousedown')
+       })
+       test.addEventListener('mousemove',function(){
+           console.log('mousemove')
+       })
+       test.addEventListener('mouseup',function(){
+           console.log('mouseup')
+       })
+       /* test.addEventListener('touchstart',function(){
+           console.log('touchstart')
+       })
+       test.addEventListener('touchmove',function(){
+           console.log('touchmove')
+       })
+       test.addEventListener('touchend',function(){
+           console.log('touchend')
+       }) */
+   }
+</script>
+</html>

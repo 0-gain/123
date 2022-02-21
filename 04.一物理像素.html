@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content='width=device-width initial-scale=1.0'>
+    <title>Document</title>
+    <style>
+        #box1 {
+            width: 16rem;
+            height: 1px;
+            background-color: #333;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box1"></div>
+</body>
+<script>
+    window.onload = function () {
+        (function () {
+            //获取像素比
+            var dpr = window.devicePixelRatio || 1
+            var styleNode = document.createElement("style")
+            var w = document.documentElement.clientWidth *dpr/ 16;
+            styleNode.innerHTML = 'html{font-size:' + w + 'px!important}';
+            document.head.appendChild(styleNode)
+
+            var scale = 1/dpr
+            //布局视口缩小
+            var meta = document.querySelector("meta[name='viewport'");
+            meta.content ='width=device-width initial-scale='+scale;
+
+        })()
+    }
+</script>
+
+</html>

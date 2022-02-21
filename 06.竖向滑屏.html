@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Y-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+				margin: 0;
+				padding: 0;
+			}
+			html,body{
+				height: 100%;
+				overflow: hidden;
+			}
+			#wrap{
+                position: relative;
+				height: 100%;
+				overflow: hidden;
+				background: pink;
+			}
+            .scrollBar{
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 4px;
+                height: 100%;
+                background-color: aqua;
+                opacity: 0;
+                transition:1s opacity;
+            }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <div class="content"> 
+        </div>
+        <div class="scrollBar"></div>
+    </div>
+</body>
+<script src="./音乐台/js/common.js"></script>
+<script>
+    window.onload = function(){
+        document.addEventListener('touchstart',function(ev){
+            ev = ev || event;
+            ev.stopPropagation();
+            ev.preventDefault();
+        },{passive:false})
+        var content = document.querySelector('.content')
+        
+        for(var i =0; i<500;i++){
+            content.innerHTML += i+'Xzy<br/>';
+        }
+        
+        var wrap = document.querySelector('#wrap')
+        var scrollBar = document.querySelector('.scrollBar')
+        /*scrollBar / 视口 = 视口 / 内容 */
+        var barHeight = document.documentElement.clientHeight*(document.documentElement.clientHeight/content.offsetHeight) + 'px'
+        console.log(content.offsetHeight)
+        scrollBar.style.height = barHeight;
+        var startY = 0;
+        var elementY = 0;
+        /* 
+            快速滑屏：
+                滑屏时间
+                滑屏位置
+        */
+            var lastPoint = 0;
+            //move过程中每移动一次开始的时间
+            var lastTime = 0;
+            //位置差
+            var pointDis = 0;
+            //时间差
+            var timeDis = 1;
+            var speed = 0;
+        content.addEventListener('touchstart',function(ev){
+            ev = ev || event;
+            var touchC = ev.changedTouches[0];
+            startY = touchC.clientY;
+            elementY = common.css(content,'translateY')
+            lastPoint = touchC.clientY;
+            lastTime = new Date().getTime();
+            content.style.transition = 'none'
+            pointDis = 0;
+            scrollBar.style.opacity=1;
+            scrollBar.style.transition = '1s opacity';
+        })
+        content.addEventListener('touchmove',function(ev){
+            ev = ev || event;
+            var touchC = ev.changedTouches[0];
+            var nowY = touchC.clientY;
+            var nowPoint = touchC.clientY;
+            var nowTime = new Date().getTime();
+            var disY = nowY - startY;
+            pointDis = nowPoint - lastPoint;
+            timeDis = nowTime - lastTime;
+            common.css(content,'translateY',elementY + disY);
+            /*滚动条滚动的实时距离/滚动条能滚动的最远距离   =  内容滚动的实时距离/内容能滚动的最远距离*/
+            var scale = document.documentElement.clientHeight/content.offsetHeight;
+            var translateY = common.css(content,'translateY')
+            // console.log(scale,translateY)
+            scrollBar.style.transition = '1s transform';
+            common.css(scrollBar,'translateY',-scale*translateY);
+            barHeight = document.documentElement.clientHeight*(document.documentElement.clientHeight/(content.offsetHeight+common.css(content,'translateY'))) + 'px'
+            scrollBar.style.height = barHeight;
+            console.log(barHeight)
+            lastPoint = nowPoint;
+            lastTime = nowTime;
+        })
+        content.addEventListener('touchend',function(ev){
+            var translateY = common.css(content,'translateY')
+            ev = ev || event;
+            var touchC = ev.changedTouches[0];
+            var nowY = touchC.clientY;
+            speed = pointDis / timeDis;
+            speed = Math.abs(speed) < 0.5 ? 0 : speed;
+            var targetY = translateY + speed*200;
+            var time = Math.abs(speed) * 0.2;
+            time = time < 0.8 ? 0.8 : time;
+            time = time > 2 ? 2 : time;
+            content.style.transition = time + 's transform'
+            common.css(content,'translateY',targetY)
+            setTimeout(() => {
+                scrollBar.style.opacity=0;
+                scrollBar.style.transition = '1s opacity';
+            }, 1000);
+        })
+    }
+</script>
+</html>

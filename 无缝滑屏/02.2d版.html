@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+    <div id="wrap">
+        <div class="carousel-wrap">
+            <div class="point"></div>
+        </div>
+    </div>
+</body>
+<script>
+    window.onload = function () {
+        //阻止所有的默认行为
+        document.addEventListener('touchstart', function (e) {
+            e = e || event;
+            e.preventDefault()
+        }, {
+            passive: false
+        })
+
+        //添加页面结构
+        var arr = ['01.jpg', '02.jpg', '03.jpg', '04.jpg', '05.jpg']
+        carousel(arr)
+
+        function carousel(arr) {
+            var carouselWrap = document.querySelector('.carousel-wrap');
+            if (carouselWrap) {
+                var ulNode = document.createElement('ul')
+                for (var i = 0; i < arr.length; i++) {
+                    ulNode.innerHTML +=
+                        `<li style="width:${100/arr.length}%;"><a href="javascript:;"><img src="./img/${arr[i]}"></a></li>`
+                }
+                ulNode.classList = 'list';
+                ulNode.style.width = `${arr.length}00%`
+                carouselWrap.appendChild(ulNode)
+
+                setTimeout(() => {
+                    var imgNode = document.querySelector('.carousel-wrap > .list > li > a >img')
+                    carouselWrap.style.height = imgNode.offsetHeight + 'px'
+                }, 1000)
+
+                var pointNode = document.querySelector('.carousel-wrap > .point')
+                if (pointNode) {
+                    for (var i = 0; i < arr.length; i++) {
+                        if (i == 0) {
+                            pointNode.innerHTML += `<span class='active'></span>`
+                        } else {
+                            pointNode.innerHTML += `<span></span>`
+                        }
+                    }
+                    var pointsSpan = document.querySelectorAll('.carousel-wrap > .point > span')
+                }
+                /* 
+                    滑屏基本逻辑
+                    1.获取手指一开始的位置
+                    2.获取元素一开始的位置
+                    3.计算出手指移动的差值
+                */
+                //手指一开始的位置
+                var startX = 0;
+                //元素一开始的位置
+                var elementX = 0;
+                var translateX = 0;
+                carouselWrap.addEventListener('touchstart', function (e) {
+                    e = e || event
+                    touchX = e.changedTouches[0]
+                    startX = touchX.clientX
+                    elementX = translateX
+                    ulNode.style.transition = 'none'
+                })
+                carouselWrap.addEventListener('touchmove', function (e) {
+                    e = e || event;
+                    var nowX = e.changedTouches[0].clientX;
+                    var disX = startX - nowX
+                    translateX = elementX - disX
+                    ulNode.style.transform = `translateX(${translateX}px)`
+                })
+                carouselWrap.addEventListener('touchend', function () {
+                    var index = translateX / document.documentElement.offsetWidth;
+                    index = Math.round(index)
+                    if (index > 0) {
+                        index = 0
+                    } else if (index < 1 - arr.length) {
+                        index = 1 - arr.length
+                    }
+                    for(var i = 0; i< pointsSpan.length; i++){
+                        pointsSpan[i].classList.remove('active')
+                    }
+                    pointsSpan[-index].classList.add('active')
+                    
+                    ulNode.style.transition = '.5s left'
+                    translateX = index * document.documentElement.offsetWidth
+                    ulNode.style.transform = `translateX(${translateX}px)`
+                    
+                })
+            }
+        }
+    }
+</script>
+
+</html>

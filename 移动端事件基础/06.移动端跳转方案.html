@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://www.baidu.com/">点我跳转</a>
+    <a href="https://www.baidu.com/">点我跳转</a>
+    <a href="https://www.baidu.com/">点我跳转</a>
+    <a href="https://www.baidu.com/">点我跳转</a>
+    <a href="https://www.baidu.com/">点我跳转</a>
+</body>
+<script>
+    window.onload = function(){
+        var a = document.querySelectorAll('a')
+        document.addEventListener('touchend',function(e){
+            e=e||window.event;
+            e.preventDefault()
+        })
+        for(var i=0; i<a.length; i++){
+            var flag;
+            a[i].addEventListener('touchstart',function(){
+                flag = false
+            })
+            a[i].addEventListener('touchmove',function(){
+                flag = true
+            })
+            a[i].addEventListener('touchend',function(){
+                if(!flag){
+                    location.href = this.href
+                }
+            })
+        }
+        
+    }
+</script>
+</html>

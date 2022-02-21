@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* html{
+            font-size: 16px;
+        } */
+        #test {
+            width: 16rem;
+            height: 16rem;
+            background-color: pink;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 适配：实现页面在不同设备上等比 -->
+    <div id="test">test</div>
+</body>
+<script>
+    //rem适配原理：改变了一个元素在不同设备上占据的css像素的个数
+    /* 
+        rem适配的优缺点
+            优点：没有破坏完美视口
+            缺点：px值到rem的转换太复杂
+    */
+    (function () {
+        var styleNode = document.createElement("style")
+        var w = document.documentElement.clientWidth / 16;
+        styleNode.innerHTML = 'html{font-size:' + w + 'px!important}';
+        document.head.appendChild(styleNode)
+    })
+</script>
+
+</html>

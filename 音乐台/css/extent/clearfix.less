@@ -1,0 +1,9 @@
+.clearfix{
+    // 为了防止低版本的IE浏览器不支持after选择器或者某些属性，在最后加上zoom:1来清除浮动。
+    *zoom: 1;
+    &::after{
+        content: '';
+        display: block;
+        clear: both;
+    }
+}

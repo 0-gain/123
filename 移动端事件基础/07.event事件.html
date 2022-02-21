@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #test{
+            margin: 50px auto;
+            width: 300px;
+            height: 300px;
+            background-color: pink;
+            opacity: .5;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="test"></div>
+</body>
+<script>
+    window.onload = function(){
+        var test = document.querySelector('#test')
+        //changedTouches
+        //targetTouches
+        //touches
+        test.addEventListener('touchend',function(e){
+            e=e||window.event;
+            test.innerHTML = 'changed:'+ e.changedTouches.length;
+            test.innerHTML += 'target:' + e.targetTouches.length
+            test.innerHTML += 'touches:' + e.touches.length
+        })
+    }
+</script>
+</html>

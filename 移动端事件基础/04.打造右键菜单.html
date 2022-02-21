@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #box1{
+            position: absolute;
+            width: 200px;
+            height: 500px;
+            background-color: pink;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="box1"></div>
+</body>
+<script>
+    window.onload = function(){
+        var box1 = document.querySelector('#box1')
+        document.oncontextmenu = function(e){
+            e=e||e.window
+            let left = e.clientX + 'px'
+            let top = e.clientY + 'px'
+
+            box1.style.left = left
+            box1.style.top = top
+            box1.style.display = 'block'
+            //阻止默认行为
+            return false
+        }
+    }
+</script>
+</html>

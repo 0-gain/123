@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width" /> -->
+    <!-- <meta name="viewport" content="initial-scale=2.0" /> -->
+    <meta name="viewport" content="width=device-width initial-scale=1.0" />
+    <!-- 会与设备独立像素链接，css像素就等同于设备独立像素，布局视口的宽度等同于独立像素 -->
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #box1{
+            width: 200px;
+            height: 200px;
+            line-height: 200px;
+            background-color: pink;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="box1"></div>
+</body>
+<script>
+    var box = document.getElementById('box1')
+    box.onclick = function(){
+        //没有<meta name="viewport" content="width=device-width" />，布局宽度为980
+        box.innerHTML = '布局视口：'+ document.documentElement.clientWidth + '视觉视口：' + window.innerWidth
+    }
+</script>
+</html>
