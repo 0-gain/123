@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let obj = {
+                'name':'钢铁侠',
+                'age':'18'
+            }
+        let count = 0;
+        let arr = [
+            {
+                'name':'钢铁侠',
+                'age':'18'
+            },
+            {
+                'name':'Tom',
+                'age':'23'
+            },
+            {
+                'name':'jerry',
+                'age':'12'
+            },
+            {
+                'name':'钢铁侠',
+                'age':'18'
+            },
+            {
+                'name':'lily',
+                'age':'34'
+            },
+        ]
+        let newArr = arr.filter((item,index)=>{
+            let temArr = [];
+            arr.forEach(item2=>{
+                temArr.push(item2.name);
+            })
+            return temArr.indexOf(item.name) == index;
+        });
+        console.log(newArr)
+
+        for(let i in obj){
+            if(obj.hasOwnProperty(i)){
+                count++;
+            }
+        }
+        let str = '[{"name":"LeonWu","age":"18"}]'
+        JSON.parse(str);
+        console.log(str);//{"name":"LeonWu","age":"18"}
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

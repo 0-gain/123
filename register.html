@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="./font/font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id="login">
+        <div class="logincon">
+            <h1>Register</h1>
+            <div class="form">
+                <div class="item">
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i></i>
+                    <input type="text" placeholder="请输入用户名" class="userName">
+                    <div class="userName_tip"></div>
+                </div>
+                <div class="item">
+                    <i class="fa fa-key" aria-hidden="true"></i>
+                    <input type="password" placeholder="请输入密码" class="password1">
+                    <div class="password1_tip"></div>
+                </div>
+                
+                <div class="item">
+                    <i class="fa fa-key" aria-hidden="true"></i>
+                    <input type="password" placeholder="再次输入密码" class="password2">
+                    <div class="password2_tip"></div>
+                </div>
+                
+            </div>
+            <a class="btn">完成注册</a>
+        </div>
+    </div>
+</body>
+<script>
+    window.onload = function () {
+        const btn = document.querySelector('#login .logincon .btn')
+        const userName_tip = document.querySelector('#login .logincon .form .item .userName_tip')
+        const userName = document.querySelector('.userName')
+        const password1 = document.querySelector('.password1')
+        const password2 = document.querySelector('.password2')
+        let flag = false;
+        const xhr = new XMLHttpRequest();
+        // 用户名点击和失去焦点事件
+        userName.addEventListener('click',function(){
+            userName_tip.innerHTML = '6~18个字符，可使用字母、数字、下划线，需要以字母开头'
+            userName_tip.style.color = '#9e9e9e';
+            userName_tip.style.display = 'block';
+        })
+        userName.addEventListener('blur',function(){
+            let str = userName.value;
+            if(str.length < 6 || str.length > 18){
+                userName_tip.innerHTML = '❗ 长度应为6~18个字符'
+                userName_tip.style.color = 'red';
+            }else if(!/[a-zA-Z]/.test(str[0])){
+                userName_tip.innerHTML = '请使用英文字母开头';
+                userName_tip.style.color = 'red';
+            }else if(/\W/.test(str)){
+                userName_tip.innerHTML = '请使用字母、数字、下划线组成'
+                userName_tip.style.color = 'red';
+            }else{
+                xhr.open('GET',`http://127.0.0.1:8000/server?userName=${userName.value}`)
+                xhr.send();
+                xhr.onreadystatechange = function(){
+                        if(xhr.readyState == 4){
+                            if(xhr.status >= 200 && xhr.status < 300){
+                                if(xhr.response != 'ok'){
+                                    userName_tip.innerHTML = '该用户名已存在'
+                                    userName_tip.style.color = 'red'
+                                }else{
+                                    flag = true;
+                                    userName_tip.innerHTML = '√ 该用户名可用'
+                                    userName_tip.style.color = 'white'
+                                }
+                            }
+                        }
+                }
+            }
+        })
+
+        
+        btn.addEventListener('click',function(){
+            if(!flag){
+                alert('请检查用户名')
+            }else if(password1.value == ''){
+                alert('密码不能为空')
+            }else if(password2.value == ''){
+                alert('请再次输入密码')
+            }else if(password1.value != password2.value){
+                alert('密码不一样，请重新输入')
+            }else{
+                xhr.open('GET',`http://127.0.0.1:8000/server?userName=${userName.value}&password=${password1.value}`)
+                xhr.send();
+                xhr.onreadystatechange = function(){
+                        if(xhr.readyState == 4){
+                            if(xhr.status >= 200 && xhr.status < 300){
+                                if(xhr.response != 'ok'){
+                                    btn.innerHTML = '注册失败'
+                                    btn.style.color = 'red'
+                                }else{
+                                    btn.innerHTML = '注册成功';
+                                    window.location = './index.html';
+                                }
+                            }
+                        }
+                }
+            }
+
+            
+        })
+    }
+</script>
+
+</html>
